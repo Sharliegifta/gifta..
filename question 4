@@ -1,0 +1,99 @@
+import datetime
+class Product:
+    def _init_(self, id, name, category, cost, price, reorder_threshold):
+        self.id = id
+        self.name = name
+        self.category = category
+        self.cost = cost
+        self.price = price
+        self.reorder_threshold = reorder_threshold
+        self.stock = 0  # Current stock level
+
+    def _str_(self):
+        return f"{self.name} ({self.id}), Category: {self.category}, Price: ${self.price}, Stock: {self.stock}"
+
+class Warehouse:
+    def _init_(self, id, name, capacity):
+        self.id = id
+        self.name = name
+        self.capacity = capacity
+        self.inventory = {}  # Dictionary to store Product:quantity pairs
+
+    def add_product(self, product, quantity):
+        if product in self.inventory:
+            self.inventory[product] += quantity
+        else:
+            self.inventory[product] = quantity
+
+    def remove_product(self, product, quantity):
+        if product in self.inventory and self.inventory[product] >= quantity:
+            self.inventory[product] -= quantity
+        else:
+            print(f"Not enough stock of {product.name} in {self.name}")
+
+    def check_stock(self, product):
+        return self.inventory.get(product, 0)
+
+# Sample data initialization
+def initialize_data():
+    # Create products
+    product1 = Product(1, "Laptop", "Electronics", 800, 1200, 10)
+    product2 = Product(2, "Smartphone", "Electronics", 500, 800, 15)
+
+    # Create warehouses
+    warehouse1 = Warehouse(1, "Main Warehouse", 1000)
+    warehouse2 = Warehouse(2, "Secondary Warehouse", 500)
+
+    # Add initial stock to warehouses
+    warehouse1.add_product(product1, 50)
+    warehouse1.add_product(product2, 100)
+    warehouse2.add_product(product1, 20)
+
+    return [product1, product2], [warehouse1, warehouse2]
+
+# Inventory management functions
+def check_reorder(product, warehouse):
+    if warehouse.check_stock(product) <= product.reorder_threshold:
+        print(f"Alert: {product.name} in {warehouse.name} needs to be reordered!")
+
+def generate_report(products, warehouses):
+    print("\n---- Inventory Report ----")
+    for warehouse in warehouses:
+        print(f"\nWarehouse: {warehouse.name}")
+        for product in products:
+            stock_level = warehouse.check_stock(product)
+            print(f"{product.name}: Stock - {stock_level}")
+
+def main():
+    products, warehouses = initialize_data()
+
+    while True:
+        print("\n===== Inventory Management System =====")
+        print("1. Check Stock")
+        print("2. Generate Reorder Alerts")
+        print("3. Generate Inventory Report")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            for product in products:
+                print(product)
+
+        elif choice == '2':
+            for warehouse in warehouses:
+                for product in products:
+                    check_reorder(product, warehouse)
+
+        elif choice == '3':
+            generate_report(products, warehouses)
+
+        elif choice == '4':
+            print("Exiting the program...")
+            break
+
+        else:
+            print("Invalid choice. Please enter a valid option.")
+
+if _name_ == "_main_":
+    main()
