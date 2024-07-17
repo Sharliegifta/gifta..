@@ -1,0 +1,26 @@
+import requests
+def get_covid_stats(country, api_key):
+
+    url = f"https://disease.sh/v3/covid-19/countries/{country}"
+    headers = {
+        "x-rapidapi-key": "edeaf952e2msh77977f224684457p11b8aejsnde22732f57f5",  
+        "x-rapidapi-host": "covid-19-data.p.rapidapi.com"  # Replace with the host header if needed
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    # Extract relevant information
+    country_name = data["country"]
+    cases = data["cases"]
+    deaths = data["deaths"]
+    recovered = data["recovered"]
+
+    # Print the statistics
+    print(f"COVID-19 Statistics for {country_name}:")
+    print(f"Total cases: {cases}")
+    print(f"Total deaths: {deaths}")
+    print(f"Total recovered: {recovered}")
+
+# Example usage:
+api_key = "6ded91a7c5mshe2cbc4c468bc8fap1d0f02jsna05278bdf612" 
+get_covid_stats("INDIA", api_key)
