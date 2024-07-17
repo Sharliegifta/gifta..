@@ -1,0 +1,64 @@
+import requests
+
+# Constants
+TRAFFIC_API_ENDPOINT = "https://maps.googleapis.com/maps/api/directions/json"
+API_KEY = "db8ac93e0448118581a295f9bfb4283a"  # Replace with your actual API key
+
+def fetch_traffic_data(start, destination):
+    """
+    Fetches real-time traffic data from Google Maps Directions API.
+
+    Parameters:
+    - start (str): Starting point (e.g., address or coordinates).
+    - destination (str): Destination point (e.g., address or coordinates).
+
+    Returns:
+    - dict: Traffic data including current conditions, travel time, incidents.
+    """
+    params = {
+        "origin": start,
+        "destination": destination,
+        "key": API_KEY,
+        "departure_time": "now",
+        "traffic_model": "best_guess",  # Optional parameter
+    }
+
+    response = requests.get(TRAFFIC_API_ENDPOINT, params=params)
+    data = response.json()
+
+    # Extract traffic information
+    if data["status"] == "OK":
+        route = data["routes"][0]
+        traffic_info = {
+            "summary": route["summary"],
+            "duration_in_traffic": route["legs"][0]["duration_in_traffic"]["text"],
+            "traffic_condition": route["legs"][0]["traffic_speed_entry"][0]["status"],
+            # You can extract more details as needed
+        }
+        return traffic_info
+    else:
+        return None
+
+def display_traffic_info(traffic_data):
+    """
+    Displays the traffic information to the user.
+
+    Parameters:
+    - traffic_data (dict): Traffic data dictionary containing current conditions,
+                           travel time, incidents, etc.
+    """
+    if traffic_data:
+        print("Current Traffic Information:")
+        print(f"Route Summary: {traffic_data['summary']}")
+        print(f"Estimated Travel Time: {traffic_data['duration_in_traffic']}")
+        print(f"Traffic Condition: {traffic_data['traffic_condition']}")
+    else:
+        print("Failed to fetch traffic data. Please check your inputs.")
+
+if _name_ == "_main_":
+    # Example usage
+    start = input("Enter starting point: ")
+    destination = input("Enter destination: ")
+
+    traffic_data = fetch_traffic_data(start, destination)
+    display_traffic_info(traffic_data)
